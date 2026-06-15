@@ -18,6 +18,12 @@
   --color-blue-900: #003380;
   --color-blue-950: #001f4d;
 
+  /* Soft pastel accent palette for icon badges & highlights */
+  --color-pastel-blue: #DFF3FF;
+  --color-pastel-purple: #DCCFF9;
+  --color-pastel-pink: #F8E7F3;
+  --color-pastel-green: #DDE3D6;
+
   /* Premium Medical Colors & Neumorphism Shadow Utilities */
   --shadow-nm-flat: 6px 6px 14px #d2d7e5, -6px -6px 14px #ffffff;
   --shadow-nm-pressed: inset 5px 5px 10px #d2d7e5, inset -5px -5px 10px #ffffff;
@@ -25,6 +31,10 @@
   --shadow-nm-button-inset: inset 2px 2px 4px #d2d7e5, inset -2px -2px 4px #ffffff;
   --shadow-nm-toast: 8px 8px 20px #cbd0de, -8px -8px 20px #ffffff;
   --shadow-nm-inset-small: inset 2px 2px 5px #d2d7e5, inset -2px -2px 5px #ffffff;
+
+  /* Flat card shadows for the booking/clinic redesign */
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.10);
 }
 
 /* Base custom classes for manual usage */
@@ -81,3 +91,79 @@
 .animate-shake {
   animation: shake 0.2s ease-in-out 2;
 }
+
+/* Comfort mode for improved readability and easier interaction */
+.comfort-mode {
+  color: #102a43;
+  background-color: #f8fafc;
+  font-weight: 500;
+}
+
+.comfort-mode * {
+  line-height: 1.75 !important;
+  letter-spacing: 0.02em;
+}
+
+.comfort-mode .text-xs {
+  font-size: 0.92rem !important;
+}
+
+.comfort-mode .text-sm {
+  font-size: 1rem !important;
+}
+
+.comfort-mode .text-base {
+  font-size: 1.08rem !important;
+}
+
+.comfort-mode .text-lg {
+  font-size: 1.25rem !important;
+}
+
+.comfort-mode .text-xl {
+  font-size: 1.45rem !important;
+}
+
+.comfort-mode .text-2xl {
+  font-size: 1.75rem !important;
+}
+
+.comfort-mode .text-3xl {
+  font-size: 2rem !important;
+}
+
+.comfort-mode button,
+.comfort-mode input,
+.comfort-mode select,
+.comfort-mode textarea,
+.comfort-mode .rounded-full,
+.comfort-mode .rounded-lg {
+  min-height: 3rem;
+}
+
+.comfort-mode button,
+.comfort-mode input,
+.comfort-mode select,
+.comfort-mode textarea {
+  padding: 0.85rem 1rem !important;
+}
+
+.comfort-mode .bg-white {
+  background-color: #fcfdff !important;
+}
+
+.comfort-mode .border-slate-100 {
+  border-color: #cbd5e1 !important;
+}
+
+.comfort-mode .text-slate-500,
+.comfort-mode .text-slate-400,
+.comfort-mode .text-slate-600 {
+  color: #1f2937 !important;
+}
+
+.comfort-mode .bg-slate-50,
+.comfort-mode .hover\:bg-slate-50:hover {
+  background-color: #edf2f7 !important;
+}
+

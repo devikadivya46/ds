@@ -1,4 +1,5 @@
-import { Patient, MRDFile } from './types';
+import { Patient, MRDFile, OutPatientVisit, Doctor, PharmacyItem, Prescription, AIInsight, SupportTicket } from './types';
+import { buildCareTeamMember } from './careTeam';
 
 export const INITIAL_PATIENTS: Patient[] = [
   {
@@ -15,8 +16,14 @@ export const INITIAL_PATIENTS: Patient[] = [
     ward: 'Ward 4B',
     bed: 'B-102',
     department: 'Cardiology',
+    departments: ['Cardiology', 'Neurology', 'General Medicine'],
     attendingDoctor: 'Dr. Sarah Chen',
     crossConsultant: 'Dr. Anthony Fauci',
+    careTeam: [
+      buildCareTeamMember('Dr. Sarah Chen', 'Primary Consultant', 'Cardiology', 'pat-1-a'),
+      buildCareTeamMember('Dr. Marcus Wright', 'Cross Consultant', 'Neurology', 'pat-1-b'),
+      buildCareTeamMember('Dr. Priya Sharma', 'Resident Doctor', 'General Medicine', 'pat-1-c')
+    ],
     status: 'Provisional Admission',
     labels: ['High Priority', 'Insurance'],
     admissionDate: '2026-06-12',
@@ -40,8 +47,14 @@ export const INITIAL_PATIENTS: Patient[] = [
     ward: 'Ward 2A',
     bed: 'A-201',
     department: 'Neurology',
+    departments: ['Neurology', 'Oncology', 'General Medicine'],
     attendingDoctor: 'Dr. Ashok Kumar',
     crossConsultant: 'Dr. Sarah Chen',
+    careTeam: [
+      buildCareTeamMember('Dr. Ashok Kumar', 'Primary Consultant', 'Neurology', 'pat-2-a'),
+      buildCareTeamMember('Dr. Jayappa J', 'Cross Consultant', 'Oncology', 'pat-2-b'),
+      buildCareTeamMember('Dr. Priya Sharma', 'Resident Doctor', 'General Medicine', 'pat-2-c')
+    ],
     status: 'Completed',
     labels: ['Insurance'],
     admissionDate: '2026-06-10',
@@ -65,8 +78,15 @@ export const INITIAL_PATIENTS: Patient[] = [
     ward: 'ICU-1',
     bed: 'I-01',
     department: 'Intensive Care',
+    departments: ['Intensive Care', 'Cardiology', 'General Medicine'],
     attendingDoctor: 'Dr. Marcus Wright',
     crossConsultant: 'Dr. Sarah Chen',
+    careTeam: [
+      buildCareTeamMember('Dr. Marcus Wright', 'Primary Consultant', 'Intensive Care', 'pat-3-a'),
+      buildCareTeamMember('Dr. Sarah Chen', 'Cross Consultant', 'Cardiology', 'pat-3-b'),
+      buildCareTeamMember('Dr. Omar Rahman', 'ICU Doctor', 'Intensive Care', 'pat-3-c'),
+      buildCareTeamMember('Dr. Meera Iyer', 'Duty Doctor', 'General Medicine', 'pat-3-d')
+    ],
     status: 'MRD Pending',
     labels: ['Payment Defaulter'],
     admissionDate: '2026-06-13',
@@ -90,8 +110,14 @@ export const INITIAL_PATIENTS: Patient[] = [
     ward: 'Ward 4B',
     bed: 'B-105',
     department: 'Cardiology',
+    departments: ['Cardiology', 'Oncology'],
     attendingDoctor: 'Dr. Sarah Chen',
     crossConsultant: 'Dr. Ashok Kumar',
+    careTeam: [
+      buildCareTeamMember('Dr. Sarah Chen', 'Primary Consultant', 'Cardiology', 'pat-4-a'),
+      buildCareTeamMember('Dr. Ashok Kumar', 'Cross Consultant', 'Oncology', 'pat-4-b'),
+      buildCareTeamMember('Dr. Meera Iyer', 'Visiting Doctor', 'Cardiology', 'pat-4-c')
+    ],
     status: 'Discharged',
     labels: ['Insurance'],
     admissionDate: '2026-06-08',
@@ -159,5 +185,428 @@ export const INITIAL_FILES: MRDFile[] = [
     authoredBy: 'Dr. Sarah Chen',
     notes: 'Standard discharge dispatch summarizing medication change from heavy IV beta-blockers to oral ACE-inhibitors. Clinical outcome fully synchronized.',
     previewUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3CFOFmvkz0vLGgzTCfau8BA-n4fPOxmtJK5f80AOmIU7ysms4X_QndKdCYHJoD1kWStMlEFyNe8ra487ef3_NcPQLPy4J_wPNkjUICKPiby0xNgErHmf7TOQycGixRThtHF2wX5A4eOSwsw2_qUQee1-ZrjVcVBu7Zkk-SQmO1eRUGfbPNgdpdqjMLLCwB2LBFka3eWjBDg6sQRwCGbEwwXHm547Z6RmOPE01jnFuWVs40QW-7UHrvMR-mXVTYbtuxhf-gMijVHo'
+  }
+];
+
+export const INITIAL_OPD_QUEUE: OutPatientVisit[] = [
+  {
+    id: 'opd-1',
+    tokenNumber: 'A-041',
+    patientName: 'Michael Tran',
+    uhid: '1031022',
+    doctor: 'Dr. Sarah Chen',
+    department: 'Cardiology',
+    appointmentTime: '09:15 AM',
+    type: 'Follow-up',
+    status: 'In Consultation',
+    reason: 'Post-angioplasty review and medication adjustment.'
+  },
+  {
+    id: 'opd-2',
+    tokenNumber: 'A-042',
+    patientName: 'Priya Nair',
+    uhid: '1031045',
+    doctor: 'Dr. Sarah Chen',
+    department: 'Cardiology',
+    appointmentTime: '09:30 AM',
+    type: 'New Consultation',
+    status: 'Waiting',
+    reason: 'Chest tightness and shortness of breath on exertion.'
+  },
+  {
+    id: 'opd-3',
+    tokenNumber: 'B-018',
+    patientName: 'Daniel Osei',
+    uhid: '1031051',
+    doctor: 'Dr. Marcus Wright',
+    department: 'Neurology',
+    appointmentTime: '09:40 AM',
+    type: 'Follow-up',
+    status: 'Waiting',
+    reason: 'Migraine management — review of new prophylactic regimen.'
+  },
+  {
+    id: 'opd-4',
+    tokenNumber: 'C-009',
+    patientName: 'Grace Williams',
+    uhid: '1031060',
+    doctor: 'Dr. Ashok Kumar',
+    department: 'Oncology',
+    appointmentTime: '09:50 AM',
+    type: 'Routine Checkup',
+    status: 'Waiting',
+    reason: 'Quarterly oncology surveillance scan review.'
+  },
+  {
+    id: 'opd-5',
+    tokenNumber: 'A-043',
+    patientName: 'Lucas Bennett',
+    uhid: '1031072',
+    doctor: 'Dr. Sarah Chen',
+    department: 'Cardiology',
+    appointmentTime: '10:00 AM',
+    type: 'New Consultation',
+    status: 'Waiting',
+    reason: 'Referred for evaluation of irregular heartbeat.'
+  },
+  {
+    id: 'opd-6',
+    tokenNumber: 'B-019',
+    patientName: 'Sofia Martinez',
+    uhid: '1031088',
+    doctor: 'Dr. Marcus Wright',
+    department: 'Neurology',
+    appointmentTime: '08:45 AM',
+    type: 'Follow-up',
+    status: 'Completed',
+    reason: 'Post-seizure monitoring follow-up appointment.'
+  },
+  {
+    id: 'opd-7',
+    tokenNumber: 'D-004',
+    patientName: 'Ethan Brooks',
+    uhid: '1031093',
+    doctor: 'Dr. Anthony Fauci',
+    department: 'General',
+    appointmentTime: '08:30 AM',
+    type: 'Routine Checkup',
+    status: 'Completed',
+    reason: 'Annual physical examination and vaccination review.'
+  },
+  {
+    id: 'opd-8',
+    tokenNumber: 'C-010',
+    patientName: 'Amara Chukwu',
+    uhid: '1031101',
+    doctor: 'Dr. Ashok Kumar',
+    department: 'Oncology',
+    appointmentTime: '10:15 AM',
+    type: 'New Consultation',
+    status: 'Cancelled',
+    reason: 'Patient called in to reschedule due to transport delay.'
+  }
+];
+
+export const INITIAL_DOCTORS: Doctor[] = [
+  {
+    id: 'doc-1',
+    name: 'Dr. Sarah Chen',
+    specialty: 'Cardiologist',
+    department: 'Cardiology',
+    successRate: 96,
+    yearsExperience: 12,
+    patientsServed: 8400,
+    consultationFee: 1200,
+    available: true,
+    about: 'Specializes in interventional cardiology, angioplasty recovery, and long-term heart health management for adult patients.'
+  },
+  {
+    id: 'doc-2',
+    name: 'Dr. Marcus Wright',
+    specialty: 'Neurologist',
+    department: 'Neurology',
+    successRate: 93,
+    yearsExperience: 9,
+    patientsServed: 5200,
+    consultationFee: 1500,
+    available: true,
+    about: 'Focuses on migraine management, seizure monitoring, and post-stroke neurological rehabilitation programs.'
+  },
+  {
+    id: 'doc-3',
+    name: 'Dr. Ashok Kumar',
+    specialty: 'Oncologist',
+    department: 'Oncology',
+    successRate: 91,
+    yearsExperience: 15,
+    patientsServed: 6700,
+    consultationFee: 1800,
+    available: false,
+    about: 'Leads quarterly surveillance and treatment planning for oncology patients, with a focus on early detection follow-ups.'
+  },
+  {
+    id: 'doc-4',
+    name: 'Dr. Anthony Fauci',
+    specialty: 'General Physician',
+    department: 'General',
+    successRate: 95,
+    yearsExperience: 20,
+    patientsServed: 12300,
+    consultationFee: 800,
+    available: true,
+    about: 'Provides general physical examinations, vaccination reviews, and routine preventive care for patients of all ages.'
+  }
+];
+
+export const INITIAL_PHARMACY_ITEMS: PharmacyItem[] = [
+  {
+    id: 'rx-item-1',
+    name: 'Amoxicillin 500mg',
+    category: 'Antibiotics',
+    stock: 420,
+    unit: 'tablets',
+    reorderLevel: 150,
+    expiryDate: '2027-03-15',
+    status: 'In Stock'
+  },
+  {
+    id: 'rx-item-2',
+    name: 'Paracetamol 650mg',
+    category: 'Analgesics',
+    stock: 95,
+    unit: 'tablets',
+    reorderLevel: 200,
+    expiryDate: '2026-11-02',
+    status: 'Low Stock'
+  },
+  {
+    id: 'rx-item-3',
+    name: 'Atorvastatin 20mg',
+    category: 'Cardiac',
+    stock: 0,
+    unit: 'tablets',
+    reorderLevel: 100,
+    expiryDate: '2026-09-30',
+    status: 'Out of Stock'
+  },
+  {
+    id: 'rx-item-4',
+    name: 'IV Cannula 18G',
+    category: 'Consumables',
+    stock: 310,
+    unit: 'units',
+    reorderLevel: 100,
+    expiryDate: '2028-01-10',
+    status: 'In Stock'
+  },
+  {
+    id: 'rx-item-5',
+    name: 'Vitamin D3 60K IU',
+    category: 'Vitamins',
+    stock: 60,
+    unit: 'capsules',
+    reorderLevel: 80,
+    expiryDate: '2026-07-22',
+    status: 'Low Stock'
+  },
+  {
+    id: 'rx-item-6',
+    name: 'Heparin Injection',
+    category: 'Cardiac',
+    stock: 145,
+    unit: 'vials',
+    reorderLevel: 50,
+    expiryDate: '2026-06-30',
+    status: 'In Stock'
+  },
+  {
+    id: 'rx-item-7',
+    name: 'Surgical Gauze Pads',
+    category: 'Consumables',
+    stock: 18,
+    unit: 'boxes',
+    reorderLevel: 40,
+    expiryDate: '2029-02-01',
+    status: 'Low Stock'
+  },
+  {
+    id: 'rx-item-8',
+    name: 'Ibuprofen 400mg',
+    category: 'Analgesics',
+    stock: 260,
+    unit: 'tablets',
+    reorderLevel: 120,
+    expiryDate: '2026-12-18',
+    status: 'In Stock'
+  }
+];
+
+export const INITIAL_PRESCRIPTIONS: Prescription[] = [
+  {
+    id: 'pres-1',
+    patientName: 'Robert Miller',
+    uhid: '1029384',
+    doctor: 'Dr. Sarah Chen',
+    medicines: ['Atorvastatin 20mg — 1 tab nightly', 'Aspirin 75mg — 1 tab morning'],
+    date: '14 Jun 2026',
+    status: 'Pending'
+  },
+  {
+    id: 'pres-2',
+    patientName: 'Sarah Jenkins',
+    uhid: '1029412',
+    doctor: 'Dr. Marcus Wright',
+    medicines: ['Levetiracetam 500mg — twice daily'],
+    date: '14 Jun 2026',
+    status: 'Pending'
+  },
+  {
+    id: 'pres-3',
+    patientName: 'Michael Tran',
+    uhid: '1031022',
+    doctor: 'Dr. Sarah Chen',
+    medicines: ['Clopidogrel 75mg — 1 tab daily', 'Metoprolol 50mg — twice daily'],
+    date: '14 Jun 2026',
+    status: 'Pending'
+  },
+  {
+    id: 'pres-4',
+    patientName: 'Daniel Osei',
+    uhid: '1031051',
+    doctor: 'Dr. Marcus Wright',
+    medicines: ['Propranolol 40mg — twice daily', 'Paracetamol 650mg — as needed'],
+    date: '13 Jun 2026',
+    status: 'Dispensed'
+  },
+  {
+    id: 'pres-5',
+    patientName: 'Grace Williams',
+    uhid: '1031060',
+    doctor: 'Dr. Ashok Kumar',
+    medicines: ['Ondansetron 8mg — before chemo session'],
+    date: '14 Jun 2026',
+    status: 'Pending'
+  }
+];
+
+export const INITIAL_AI_INSIGHTS: AIInsight[] = [
+  {
+    id: 'ai-1',
+    type: 'Risk Alert',
+    title: 'Elevated readmission risk detected',
+    description: 'Robert Miller (UHID 1029384) shows a 78% predicted likelihood of 30-day readmission based on recent vitals trends and discharge plan complexity.',
+    severity: 'High',
+    confidence: 91,
+    relatedTo: 'Robert Miller — Ward 4B',
+    timestamp: '08:12 AM'
+  },
+  {
+    id: 'ai-2',
+    type: 'Resource Forecast',
+    title: 'ICU bed demand spike expected',
+    description: 'Forecast model predicts ICU occupancy will exceed 90% within 48 hours based on current admission velocity in the Cardiology and Neurology units.',
+    severity: 'Medium',
+    confidence: 84,
+    relatedTo: 'Ward 4B / ICU Wing',
+    timestamp: '07:45 AM'
+  },
+  {
+    id: 'ai-3',
+    type: 'Anomaly Detection',
+    title: 'Unusual lab result pattern flagged',
+    description: 'Sarah Jenkins’ latest CBC panel deviates significantly from her 6-month baseline trend — recommend clinician review before next dosage adjustment.',
+    severity: 'High',
+    confidence: 88,
+    relatedTo: 'Sarah Jenkins — Ward 2A',
+    timestamp: '07:30 AM'
+  },
+  {
+    id: 'ai-4',
+    type: 'Care Recommendation',
+    title: 'Consider early mobilization protocol',
+    description: 'Post-operative recovery data for similar cardiac cases suggests early mobilization may reduce average length-of-stay by 1.2 days.',
+    severity: 'Low',
+    confidence: 76,
+    relatedTo: 'Cardiology Department',
+    timestamp: '06:55 AM'
+  },
+  {
+    id: 'ai-5',
+    type: 'Resource Forecast',
+    title: 'Pharmacy stock depletion forecast',
+    description: 'Atorvastatin 20mg is projected to reach zero stock within 3 days given current prescription velocity. Reorder recommended immediately.',
+    severity: 'Medium',
+    confidence: 95,
+    relatedTo: 'Pharmacy Inventory',
+    timestamp: '06:20 AM'
+  },
+  {
+    id: 'ai-6',
+    type: 'Risk Alert',
+    title: 'High fall-risk patient identified',
+    description: 'Evelyn Thorne’s mobility assessment and medication profile indicate elevated fall risk overnight — recommend bed rail and hourly checks.',
+    severity: 'Medium',
+    confidence: 82,
+    relatedTo: 'Evelyn Thorne — Ward 4B',
+    timestamp: '05:50 AM'
+  },
+  {
+    id: 'ai-7',
+    type: 'Care Recommendation',
+    title: 'Documentation compliance nudge',
+    description: '4 MRD files remain unverified for over 48 hours. Prioritizing these reviews may improve audit compliance scores this week.',
+    severity: 'Low',
+    confidence: 70,
+    relatedTo: 'MRD Records',
+    timestamp: '05:10 AM'
+  }
+];
+
+export const INITIAL_SUPPORT_TICKETS: SupportTicket[] = [
+  {
+    id: 'tkt-1',
+    subject: 'ECG monitor in Bay 3 not powering on',
+    requestedBy: 'Nurse Patel',
+    department: 'Cardiology',
+    category: 'Equipment',
+    priority: 'Critical',
+    status: 'Open',
+    createdAt: '14 Jun 2026, 07:20 AM',
+    assignedTo: 'Biomedical Eng. Team'
+  },
+  {
+    id: 'tkt-2',
+    subject: 'Cannot access MRD upload module on Ward 2A terminal',
+    requestedBy: 'Dr. Marcus Wright',
+    department: 'Neurology',
+    category: 'IT Support',
+    priority: 'High',
+    status: 'In Progress',
+    createdAt: '14 Jun 2026, 06:50 AM',
+    assignedTo: 'IT Helpdesk - Raj'
+  },
+  {
+    id: 'tkt-3',
+    subject: 'Request additional login seats for night shift',
+    requestedBy: 'Ward Admin - Lisa',
+    department: 'Administration',
+    category: 'Software Access',
+    priority: 'Medium',
+    status: 'Open',
+    createdAt: '13 Jun 2026, 09:15 PM',
+    assignedTo: 'IT Helpdesk - Raj'
+  },
+  {
+    id: 'tkt-4',
+    subject: 'Air conditioning unit malfunctioning in Ward 4B',
+    requestedBy: 'Nurse Coordinator - Tom',
+    department: 'Facilities',
+    category: 'Facilities',
+    priority: 'High',
+    status: 'In Progress',
+    createdAt: '13 Jun 2026, 04:30 PM',
+    assignedTo: 'Facilities Crew B'
+  },
+  {
+    id: 'tkt-5',
+    subject: 'Printer in Pharmacy out of toner',
+    requestedBy: 'Pharmacist - Anjali',
+    department: 'Pharmacy',
+    category: 'Equipment',
+    priority: 'Low',
+    status: 'Resolved',
+    createdAt: '12 Jun 2026, 11:00 AM',
+    assignedTo: 'Facilities Crew A'
+  },
+  {
+    id: 'tkt-6',
+    subject: 'Password reset request for Dr. Ashok Kumar',
+    requestedBy: 'Dr. Ashok Kumar',
+    department: 'Oncology',
+    category: 'IT Support',
+    priority: 'Medium',
+    status: 'Resolved',
+    createdAt: '12 Jun 2026, 09:40 AM',
+    assignedTo: 'IT Helpdesk - Raj'
   }
 ];

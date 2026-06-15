@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { Users, FolderLock, PlusCircle, BarChart3, Settings } from 'lucide-react';
 
 interface BottomNavProps {
@@ -17,7 +18,7 @@ export default function BottomNav({ activeTab, setActiveTab, onAddPatientClick }
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white/40 backdrop-blur-xl border-t border-white/60 h-16 flex items-center justify-around px-2 z-40 shadow-[0_-8px_32px_rgba(31,38,135,0.06)] pb-safe">
+    <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 h-16 flex items-center justify-around px-2 z-40 shadow-card pb-safe">
       {navItems.map((item) => {
         const IconComponent = item.icon;
         const isActive = activeTab === item.id;
@@ -39,16 +40,21 @@ export default function BottomNav({ activeTab, setActiveTab, onAddPatientClick }
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center justify-center flex-grow py-1 gap-0.5 rounded-xl transition-all duration-150 ${
-              isActive 
-                ? 'text-[#0066FF] font-black' 
-                : 'text-slate-450 hover:text-[#0b1c30]'
+            className={`flex flex-col items-center justify-center flex-grow py-1 gap-0.5 rounded-full transition-all duration-150 ${
+              isActive
+                ? 'text-[#0066FF] font-black'
+                : 'text-slate-400 hover:text-[#0b1c30]'
             }`}
           >
-            <div className={`p-1.5 rounded-lg transition-all ${
-              isActive ? 'bg-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05)] text-[#0066FF] border border-white/85' : ''
-            }`}>
-              <IconComponent className="w-4.5 h-4.5" />
+            <div className={`relative p-1.5 rounded-full transition-all ${isActive ? 'text-white' : ''}`}>
+              {isActive && (
+                <motion.div
+                  layoutId="navActivePill"
+                  className="absolute inset-0 bg-[#0066FF] rounded-full shadow-[0_4px_12px_rgba(0,102,255,0.25)]"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                />
+              )}
+              <IconComponent className="w-4.5 h-4.5 relative z-10" />
             </div>
             <span className="text-[9px] uppercase font-bold tracking-tight mt-0.5">{item.label}</span>
           </button>

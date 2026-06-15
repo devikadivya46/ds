@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Heart, Brain, FileSpreadsheet, Calendar, ChevronDown, Check } from 'lucide-react';
 import { ActiveFilters } from '../types';
+import { CARE_TEAM_ROLES, DEPARTMENT_OPTIONS, DOCTOR_OPTIONS } from '../careTeam';
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -110,14 +111,26 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
     setLocalFilters({ ...localFilters, labels: newLabels });
   };
 
+  const handleWardToggle = (ward: string) => {
+    let newWards = [...localFilters.wards];
+    if (newWards.includes(ward)) {
+      newWards = newWards.filter(w => w !== ward);
+    } else {
+      newWards.push(ward);
+    }
+    setLocalFilters({ ...localFilters, wards: newWards });
+  };
+
   const handleReset = () => {
     const emptyFilters: ActiveFilters = {
       doctor: '',
       department: '',
+      role: '',
       statuses: [],
       startDate: '',
       endDate: '',
-      labels: []
+      labels: [],
+      wards: []
     };
     setLocalFilters(emptyFilters);
     onReset();
@@ -125,10 +138,12 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
   };
 
   // Doctors & Departments from current medical list
-  const doctorsList = ['Dr. Sarah Chen', 'Dr. Ashok Kumar', 'Dr. Marcus Wright', 'Dr. Anthony Fauci'];
-  const departmentsList = ['Cardiology', 'Neurology', 'General', 'Oncology', 'Pediatrics', 'Intensive Care'];
+  const doctorsList = DOCTOR_OPTIONS;
+  const departmentsList = DEPARTMENT_OPTIONS;
+  const roleOptions = CARE_TEAM_ROLES;
   const statusOptions = ['Provisional Admission', 'MRD Pending', 'Completed', 'Discharged'];
   const labelOptions = ['Payment Defaulter', 'Insurance', 'High Priority'];
+  const wardsList = ['Ward 4B', 'Ward 2A', 'ICU-1'];
 
   return (
     <AnimatePresence>
@@ -159,9 +174,9 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200/50 bg-[#f1f3f9] shrink-0">
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={onClose} 
-                  className="w-10 h-10 hover:bg-[#ebedf4] bg-[#f1f3f9] text-slate-800 rounded-xl flex items-center justify-center transition-all shadow-nm-button border border-white cursor-pointer active:scale-95"
+                <button
+                  onClick={onClose}
+                  className="w-10 h-10 hover:bg-[#ebedf4] bg-[#f1f3f9] text-slate-800 rounded-full flex items-center justify-center transition-all shadow-nm-button border border-white cursor-pointer active:scale-95"
                   title="Close filters"
                   aria-label="Close filters"
                 >
@@ -171,9 +186,9 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                   Filter Patients Directory
                 </h2>
               </div>
-              <button 
+              <button
                 onClick={handleReset}
-                className="h-10 px-4 bg-[#f1f3f9] hover:bg-[#ebedf4] text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer border border-white/80 shadow-nm-button active:scale-95"
+                className="h-10 px-4 bg-[#f1f3f9] hover:bg-[#ebedf4] text-slate-700 text-xs font-bold rounded-full transition-all cursor-pointer border border-white/80 shadow-nm-button active:scale-95"
               >
                 Reset All
               </button>
@@ -185,15 +200,15 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
               {/* SECTION: Doctor Selection */}
               <div className="space-y-2">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                  Attending Doctor Coordinator
+                  Doctor
                 </label>
                 <div className="relative">
                   <select 
                     value={localFilters.doctor}
                     onChange={(e) => setLocalFilters({ ...localFilters, doctor: e.target.value })}
-                    className="w-full h-12 px-4 bg-[#f1f3f9] border border-white/80 rounded-xl text-slate-800 font-extrabold appearance-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none shadow-nm-inset-small transition-all text-xs cursor-pointer"
+                    className="w-full h-12 px-4 bg-[#f1f3f9] border border-white/80 rounded-full text-slate-800 font-extrabold appearance-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none shadow-nm-inset-small transition-all text-xs cursor-pointer"
                   >
-                    <option value="">Any Staff Doctor</option>
+                    <option value="">Any Doctor</option>
                     {doctorsList.map(doc => (
                       <option key={doc} value={doc}>{doc}</option>
                     ))}
@@ -205,17 +220,37 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
               {/* SECTION: Department Selection */}
               <div className="space-y-2">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                  Medical Unit / Specialization
+                  Department
                 </label>
                 <div className="relative">
                   <select 
                     value={localFilters.department}
                     onChange={(e) => setLocalFilters({ ...localFilters, department: e.target.value })}
-                    className="w-full h-12 px-4 bg-[#f1f3f9] border border-white/80 rounded-xl text-slate-800 font-extrabold appearance-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none shadow-nm-inset-small transition-all text-xs cursor-pointer"
+                    className="w-full h-12 px-4 bg-[#f1f3f9] border border-white/80 rounded-full text-slate-800 font-extrabold appearance-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none shadow-nm-inset-small transition-all text-xs cursor-pointer"
                   >
-                    <option value="">Any Specialization</option>
+                    <option value="">Any Department</option>
                     {departmentsList.map(dept => (
-                      <option key={dept} value={dept}>{dept} Sector</option>
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* SECTION: Role Selection */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                  Care Team Role
+                </label>
+                <div className="relative">
+                  <select 
+                    value={localFilters.role}
+                    onChange={(e) => setLocalFilters({ ...localFilters, role: e.target.value })}
+                    className="w-full h-12 px-4 bg-[#f1f3f9] border border-white/80 rounded-full text-slate-800 font-extrabold appearance-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none shadow-nm-inset-small transition-all text-xs cursor-pointer"
+                  >
+                    <option value="">Any Role</option>
+                    {roleOptions.map(role => (
+                      <option key={role} value={role}>{role}</option>
                     ))}
                   </select>
                   <ChevronDown className="w-4 h-4 text-slate-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -234,9 +269,9 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                       <button
                         key={st}
                         onClick={() => handleStatusToggle(st)}
-                        className={`flex items-center justify-between h-12 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                          isChecked 
-                            ? 'bg-[#0066FF] text-white border-blue-500 shadow-sm active:scale-95' 
+                        className={`flex items-center justify-between h-12 px-4 rounded-full border text-xs font-bold transition-all cursor-pointer ${
+                          isChecked
+                            ? 'bg-[#0066FF] text-white border-blue-500 shadow-sm active:scale-95'
                             : 'bg-[#f1f3f9] border-white/80 text-slate-700 shadow-nm-button hover:bg-[#ebedf4]'
                         }`}
                       >
@@ -261,7 +296,7 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                         type="date"
                         value={localFilters.startDate}
                         onChange={(e) => setLocalFilters({ ...localFilters, startDate: e.target.value })}
-                        className="w-full h-12 px-3 bg-[#f1f3f9] border border-white/80 rounded-xl text-xs font-bold font-mono focus:ring-4 focus:ring-blue-100 focus:outline-none focus:border-blue-500 shadow-nm-inset-small transition-all cursor-pointer"
+                        className="w-full h-12 px-3 bg-[#f1f3f9] border border-white/80 rounded-full text-xs font-bold font-mono focus:ring-4 focus:ring-blue-100 focus:outline-none focus:border-blue-500 shadow-nm-inset-small transition-all cursor-pointer"
                       />
                     </div>
                   </div>
@@ -272,7 +307,7 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                         type="date"
                         value={localFilters.endDate}
                         onChange={(e) => setLocalFilters({ ...localFilters, endDate: e.target.value })}
-                        className="w-full h-12 px-3 bg-[#f1f3f9] border border-white/80 rounded-xl text-xs font-bold font-mono focus:ring-4 focus:ring-blue-100 focus:outline-none focus:border-blue-500 shadow-nm-inset-small transition-all cursor-pointer"
+                        className="w-full h-12 px-3 bg-[#f1f3f9] border border-white/80 rounded-full text-xs font-bold font-mono focus:ring-4 focus:ring-blue-100 focus:outline-none focus:border-blue-500 shadow-nm-inset-small transition-all cursor-pointer"
                       />
                     </div>
                   </div>
@@ -291,9 +326,9 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                       <button
                         key={lbl}
                         onClick={() => handleLabelToggle(lbl)}
-                        className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer ${
-                          isChecked 
-                            ? 'border-blue-500 bg-blue-50/30 font-bold text-blue-950 shadow-sm' 
+                        className={`w-full flex items-center justify-between p-3.5 rounded-full border transition-all cursor-pointer ${
+                          isChecked
+                            ? 'border-blue-500 bg-blue-50/30 font-bold text-blue-950 shadow-sm'
                             : 'bg-[#f1f3f9] border-white/80 hover:bg-[#ebedf4] shadow-nm-button text-slate-700'
                         }`}
                       >
@@ -307,7 +342,7 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                           }`} />
                           <span className="font-extrabold text-xs">{lbl}</span>
                         </div>
-                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                           isChecked ? 'border-blue-600 bg-blue-600 text-white shadow-sm' : 'border-slate-300'
                         }`}>
                           {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
@@ -318,19 +353,45 @@ export default function FilterDrawer({ isOpen, onClose, filters, onApply, onRese
                 </div>
               </div>
 
+              {/* SECTION: Ward Selection (Multi-Select Buttons) */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                  Hospital Ward Location (Multi-Select)
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {wardsList.map((ward) => {
+                    const isChecked = localFilters.wards.includes(ward);
+                    return (
+                      <button
+                        key={ward}
+                        onClick={() => handleWardToggle(ward)}
+                        className={`flex items-center justify-between h-12 px-4 rounded-full border text-xs font-bold transition-all cursor-pointer ${
+                          isChecked
+                            ? 'bg-[#0066FF] text-white border-blue-500 shadow-sm active:scale-95'
+                            : 'bg-[#f1f3f9] border-white/80 text-slate-700 shadow-nm-button hover:bg-[#ebedf4]'
+                        }`}
+                      >
+                        <span className="truncate">{ward}</span>
+                        {isChecked && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
             </div>
 
             {/* Bottom Actions Bar - Reset and Apply Filters */}
             <div className="p-6 border-t border-slate-200/50 bg-[#f1f3f9] flex gap-4 shrink-0">
-              <button 
+              <button
                 onClick={handleReset}
-                className="flex-1 h-12 bg-[#f1f3f9] border border-white hover:bg-[#ebedf4] shadow-nm-button text-slate-700 font-extrabold rounded-xl transition-all cursor-pointer text-xs active:scale-95"
+                className="flex-1 h-12 bg-[#f1f3f9] border border-white hover:bg-[#ebedf4] shadow-nm-button text-slate-700 font-extrabold rounded-full transition-all cursor-pointer text-xs active:scale-95"
               >
                 Reset All Filters
               </button>
-              <button 
+              <button
                 onClick={handleApply}
-                className="flex-grow-[1.5] h-12 bg-[#0066FF] hover:bg-blue-700 text-white font-extrabold rounded-xl transition-all shadow-[0_4px_12px_rgba(0,102,255,0.3)] hover:shadow-blue-300 active:scale-95 cursor-pointer text-xs border border-blue-400/20"
+                className="flex-grow-[1.5] h-12 bg-[#0066FF] hover:bg-blue-700 text-white font-extrabold rounded-full transition-all shadow-[0_4px_12px_rgba(0,102,255,0.3)] hover:shadow-blue-300 active:scale-95 cursor-pointer text-xs border border-blue-400/20"
                 id="apply-filter-submit-btn"
               >
                 Apply Selected Settings

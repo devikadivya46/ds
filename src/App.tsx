@@ -29,7 +29,7 @@ import { jsPDF } from 'jspdf';
 
 // Shared definitions & types
 import { Patient, MRDFile, ActiveFilters } from './types';
-import { INITIAL_PATIENTS, INITIAL_FILES } from './data';
+import { INITIAL_PATIENTS, INITIAL_FILES, INITIAL_OPD_QUEUE, INITIAL_SUPPORT_TICKETS } from './data';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -42,7 +42,12 @@ import MRDFiles from './components/MRDFiles';
 export default function App() {
   const [activeTab, setActiveTab] = React.useState<string>('in-patient');
 
-  // Multi-alert custom Toast container state
+  // Comfort mode: larger text, higher contrast, and easier spacing for older users
+  const [comfortMode, setComfortMode] = React.useState<boolean>(() => {
+    const saved = localStorage.getItem('nexus_comfort_mode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
   const [toasts, setToasts] = React.useState<{ id: string; message: string; type: 'success' | 'info' | 'warning' | 'error'; onUndo?: () => void }[]>([]);
 
   const addToast = (
@@ -60,6 +65,11 @@ export default function App() {
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
+
+  React.useEffect(() => {
+    localStorage.setItem('nexus_comfort_mode', JSON.stringify(comfortMode));
+    document.documentElement.classList.toggle('comfort-mode', comfortMode);
+  }, [comfortMode]);
 
   // Keyboard Shortcuts: Alt + N and Alt + F
   React.useEffect(() => {
@@ -258,6 +268,8 @@ export default function App() {
   // Calculations for counters
   const criticalPatientsCount = patients.filter(p => p.labels.includes('High Priority')).length;
   const unverifiedFilesCount = files.filter(f => f.status === 'Pending Review').length;
+  const opdWaitingCount = INITIAL_OPD_QUEUE.filter(v => v.status === 'Waiting').length;
+  const openTicketsCount = INITIAL_SUPPORT_TICKETS.filter(t => t.status === 'Open').length;
 
   // Add / edit patient callback
   const handleSavePatient = (savedPatient: Patient) => {
@@ -409,22 +421,19 @@ export default function App() {
 
   return (
     <div 
-      className="min-h-screen text-[#0b1c30] flex font-sans overflow-x-hidden antialiased select-none relative !bg-transparent"
-      style={{
-        backgroundImage: "radial-gradient(circle at top left, rgba(245, 247, 252, 0.45), rgba(230, 235, 248, 0.45)), url('/src/assets/images/hospital_blur_bg_1781442077215.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat'
-      }}
+      className={`min-h-screen text-[#0b1c30] flex font-sans overflow-x-hidden antialiased select-none relative isolate ${comfortMode ? 'comfort-mode' : ''}`}
     >
       
       {/* Sidebar Navigation (Wide view) */}
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        activePatientCount={patients.length} 
+        activePatientCount={patients.length}
         unverifiedFilesCount={unverifiedFilesCount}
+        opdWaitingCount={opdWaitingCount}
+        openTicketsCount={openTicketsCount}
+        comfortMode={comfortMode}
+        onToggleComfortMode={() => setComfortMode(prev => !prev)}
         onShowToast={addToast}
       />
 
@@ -486,7 +495,33 @@ export default function App() {
             </button>
           </div>
         </header>        {/* Tab content routing switches */}
-        {activeTab === 'in-patient' ? (
+        {activeTab === 'overview' ? (
+          <main className="flex-1 p-4 md:p-8 space-y-6 lg:pl-72 pb-24 select-none animate-fadeIn">
+            <div>
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Home</h1>
+              <p className="text-xs text-slate-500 mt-0.5">Welcome to DScribe. Use the navigation to open modules or view quick metrics below.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
+                <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Active Patients</p>
+                <p className="text-2xl font-black text-slate-800 mt-2">{patients.length}</p>
+              </div>
+              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
+                <p className="text-[10px] font-black text-rose-700 uppercase tracking-widest">Critical</p>
+                <p className="text-2xl font-black text-slate-800 mt-2">{criticalPatientsCount}</p>
+              </div>
+              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
+                <p className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">Unverified Files</p>
+                <p className="text-2xl font-black text-slate-800 mt-2">{unverifiedFilesCount}</p>
+              </div>
+              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
+                <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Bed Utilization</p>
+                <p className="text-2xl font-black text-slate-800 mt-2">85.3%</p>
+              </div>
+            </div>
+          </main>
+        ) : activeTab === 'in-patient' ? (
           <main className="flex-1 p-4 md:p-8 space-y-6 lg:pl-72 pb-24">
             
             {/* Context bar subheader titles */}
@@ -904,7 +939,7 @@ export default function App() {
 
               </div>
             </div>
-          </main>      </main>
+          </main>
         ) : activeTab === 'analytics' ? (
           <main className="flex-1 p-4 md:p-8 space-y-6 lg:pl-72 pb-24 select-none animate-fadeIn">
             <div>
