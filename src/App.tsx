@@ -38,6 +38,7 @@ import PatientCard from './components/PatientCard';
 import FilterDrawer from './components/FilterDrawer';
 import AddPatientWizard from './components/AddPatientWizard';
 import MRDFiles from './components/MRDFiles';
+import Overview from './components/Overview';
 
 export default function App() {
   const [activeTab, setActiveTab] = React.useState<string>('in-patient');
@@ -496,31 +497,7 @@ export default function App() {
           </div>
         </header>        {/* Tab content routing switches */}
         {activeTab === 'overview' ? (
-          <main className="flex-1 p-4 md:p-8 space-y-6 lg:pl-72 pb-24 select-none animate-fadeIn">
-            <div>
-              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Home</h1>
-              <p className="text-xs text-slate-500 mt-0.5">Welcome to DScribe. Use the navigation to open modules or view quick metrics below.</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
-                <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Active Patients</p>
-                <p className="text-2xl font-black text-slate-800 mt-2">{patients.length}</p>
-              </div>
-              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
-                <p className="text-[10px] font-black text-rose-700 uppercase tracking-widest">Critical</p>
-                <p className="text-2xl font-black text-slate-800 mt-2">{criticalPatientsCount}</p>
-              </div>
-              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
-                <p className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">Unverified Files</p>
-                <p className="text-2xl font-black text-slate-800 mt-2">{unverifiedFilesCount}</p>
-              </div>
-              <div className="p-5 bg-white/55 backdrop-blur-md border border-white/80 rounded-3xl shadow-sm">
-                <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Bed Utilization</p>
-                <p className="text-2xl font-black text-slate-800 mt-2">85.3%</p>
-              </div>
-            </div>
-          </main>
+          <Overview patients={patients} files={files} setActiveTab={setActiveTab} />
         ) : activeTab === 'in-patient' ? (
           <main className="flex-1 p-4 md:p-8 space-y-6 lg:pl-72 pb-24">
             
